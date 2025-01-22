@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:zenverse_mobile_apps/navbar_bottom.dart';
+import 'package:zenverse_mobile_apps/view/navbar_bottom.dart';
 
 void main() {
   runApp(const MainApp());

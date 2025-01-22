@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:zenverse_mobile_apps/homepage.dart';
+import 'package:zenverse_mobile_apps/view/homepage.dart';
 
 class DynamicBottomNavbar extends StatefulWidget {
   const DynamicBottomNavbar({super.key});
