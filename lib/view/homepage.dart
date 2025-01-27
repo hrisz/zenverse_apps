@@ -1,7 +1,44 @@
 import 'package:flutter/material.dart';
+import 'package:zenverse_mobile_apps/model/games_model.dart';
+import 'package:zenverse_mobile_apps/services/api_services.dart';
 
-class MyHomepage extends StatelessWidget {
-  const MyHomepage({Key? key}) : super(key: key);
+class MyHomepage extends StatefulWidget {
+  const MyHomepage({super.key});
+
+  @override
+  State<MyHomepage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomepage> {
+  final ApiServices _dataServices = ApiServices();
+  List<GamesModel> _homeGames = [];
+  List<GamesModel> _topRatedGames = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchGamesData();
+    _fetchTopRatedGames();
+  }
+
+  void _fetchGamesData() async {
+    final gamesData = await _dataServices.getAllGamesHomepage();
+    if (gamesData != null) {
+      setState(() {
+        _homeGames = gamesData;
+      });
+    }
+  }
+
+  void _fetchTopRatedGames() async {
+    final topRatedData = await _dataServices
+        .getGamesByRating(9.0); 
+    if (topRatedData != null) {
+      setState(() {
+        _topRatedGames = topRatedData;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,14 +70,15 @@ class MyHomepage extends StatelessWidget {
               height: 125,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                itemCount: 10,
+                itemCount: _topRatedGames.length,
                 itemBuilder: (context, index) {
+                  final game = _topRatedGames[index];
                   return appHorizontalCard(
                     context,
-                    'Zenverse Apps',
-                    'assets/img/default-banner.png',
-                    'assets/img/default-logo.png',
-                    8.7,
+                    game.name,
+                    game.gameBanner, // Gambar sampul
+                    game.gameLogo, // Placeholder jika null
+                    game.rating,
                   );
                 },
               ),
@@ -57,10 +95,10 @@ class MyHomepage extends StatelessWidget {
                 mainAxisSpacing: 12,
                 childAspectRatio: 1.1,
               ),
-              itemCount: 8, // Number of cards
+              itemCount: _homeGames.length, // Number of cards
               itemBuilder: (context, index) {
-                return appCard(
-                    'Zen_App $index', Icons.apps, 'Developer $index');
+                final game = _homeGames[index];
+                return appCard(game.name, game.gameBanner, game.developer.name);
               },
             ),
           ),
@@ -70,7 +108,7 @@ class MyHomepage extends StatelessWidget {
   }
 
   // Widget kartu aplikasi
-  Widget appCard(String name, IconData icon, String developer) {
+  Widget appCard(String name, String gameBanner, String developer) {
     return Card(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12.0),
@@ -88,15 +126,15 @@ class MyHomepage extends StatelessWidget {
                 top: Radius.circular(12.0),
               ),
             ),
-            child: Center(
-              child: CircleAvatar(
-                radius: 30,
-                backgroundColor: Colors.white,
-                child: Icon(
-                  icon,
-                  size: 30,
-                  color: const Color.fromARGB(255, 114, 137, 218),
-                ),
+            child: ClipRRect(
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(12.0),
+              ),
+              child: Image.network(
+                gameBanner,
+                fit: BoxFit.cover,
+                height: 100,
+                width: double.infinity,
               ),
             ),
           ),
@@ -104,6 +142,7 @@ class MyHomepage extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   name,
@@ -111,13 +150,20 @@ class MyHomepage extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                     fontSize: 14,
                   ),
-                  textAlign: TextAlign.center,
+                  textAlign: TextAlign.start,
                   overflow: TextOverflow.ellipsis,
+                  maxLines: 1, // Batas 1 baris
                 ),
                 const SizedBox(height: 4),
                 Text(
                   developer,
-                  style: const TextStyle(fontSize: 12),
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey, // Warna teks lebih lembut
+                  ),
+                  textAlign: TextAlign.start,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1, // Batas 1 baris
                 ),
               ],
             ),
@@ -130,8 +176,8 @@ class MyHomepage extends StatelessWidget {
   Widget appHorizontalCard(
     BuildContext context,
     String name,
-    String coverImage,
-    String iconImage,
+    String gameBanner,
+    String gameLogo,
     double rating,
   ) {
     return Padding(
@@ -154,8 +200,8 @@ class MyHomepage extends StatelessWidget {
               ClipRRect(
                 borderRadius:
                     const BorderRadius.vertical(top: Radius.circular(12.0)),
-                child: Image.asset(
-                  coverImage,
+                child: Image.network(
+                  gameBanner,
                   width: double.infinity,
                   height: 60,
                   fit: BoxFit.cover,
@@ -169,8 +215,8 @@ class MyHomepage extends StatelessWidget {
                     // Ikon aplikasi
                     ClipRRect(
                       borderRadius: BorderRadius.circular(8.0),
-                      child: Image.asset(
-                        iconImage,
+                      child: Image.network(
+                        gameLogo,
                         width: 40,
                         height: 40,
                         fit: BoxFit.cover,

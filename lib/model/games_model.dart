@@ -1,9 +1,8 @@
-// DIGUNAKAN UNTUK GET ALL DATA
 class GamesModel {
   final String id;
   final String name;
   final double rating;
-  final DateTime releaseDate;
+  final DateTime? releaseDate; // Bisa nullable karena tidak ada di API
   final String description;
   final List<String> genre;
   final DeveloperModel developer;
@@ -16,7 +15,7 @@ class GamesModel {
     required this.id,
     required this.name,
     required this.rating,
-    required this.releaseDate,
+    this.releaseDate, // Nullable
     required this.description,
     required this.genre,
     required this.developer,
@@ -30,7 +29,9 @@ class GamesModel {
         id: json["_id"],
         name: json["name"],
         rating: (json["rating"] as num).toDouble(),
-        releaseDate: DateTime.parse(json["release_date"]),
+        releaseDate: json["release_date"] != null
+            ? DateTime.parse(json["release_date"])
+            : null, // Null jika tidak ada
         description: json["desc"],
         genre: List<String>.from(json["genre"]),
         developer: DeveloperModel.fromJson(json["dev_name"]),
@@ -44,7 +45,7 @@ class GamesModel {
         "_id": id,
         "name": name,
         "rating": rating,
-        "release_date": releaseDate.toIso8601String(),
+        "release_date": releaseDate?.toIso8601String(), // Nullable
         "desc": description,
         "genre": genre,
         "dev_name": developer.toJson(),
@@ -66,11 +67,11 @@ class DeveloperModel {
 
   factory DeveloperModel.fromJson(Map<String, dynamic> json) => DeveloperModel(
         name: json["name"],
-        bio: json["dev_bio"],
+        bio: json["bio"], // Perbaikan key
       );
 
   Map<String, dynamic> toJson() => {
         "name": name,
-        "dev_bio": bio,
+        "bio": bio, // Sesuai dengan key asli
       };
 }
