@@ -13,6 +13,8 @@ class _MyHomePageState extends State<MyHomepage> {
   final ApiServices _dataServices = ApiServices();
   List<GamesModel> _homeGames = [];
   List<GamesModel> _topRatedGames = [];
+  String _searchQuery = '';
+  List<GamesModel> _searchResults = [];
 
   @override
   void initState() {
@@ -40,30 +42,85 @@ class _MyHomePageState extends State<MyHomepage> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Image.asset(
-          'assets/icon/blue-logo.png',
-          height: 30,
-        ),
-        backgroundColor: const Color.fromARGB(255, 54, 57, 62),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () {},
+  void _searchGames(String query) async {
+  final searchResults = await _dataServices.getGamesByName(query);
+  if (searchResults != null) {
+    setState(() {
+      _searchResults = searchResults;
+    });
+  }
+}
+
+void showSearchDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: const Text('Search Game'),
+        content: TextField(
+          onChanged: (value) {
+            _searchQuery = value;
+          },
+          decoration: const InputDecoration(
+            hintText: 'Enter game name',
           ),
-          IconButton(
-            icon: const Icon(Icons.more_vert),
-            onPressed: () {},
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              _searchGames(_searchQuery);
+            },
+            child: const Text('Search'),
           ),
         ],
+      );
+    },
+  );
+}
+
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      title: Image.asset(
+        'assets/icon/blue-logo.png',
+        height: 30,
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Kategori
+      backgroundColor: const Color.fromARGB(255, 54, 57, 62),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.search),
+          onPressed: () {
+            showSearchDialog(context);
+          },
+        ),
+        if (_searchResults.isNotEmpty) 
+          IconButton(
+            icon: const Icon(Icons.clear),
+            onPressed: () {
+              setState(() {
+                _searchResults = [];
+              });
+            },
+          ),
+        IconButton(
+          icon: const Icon(Icons.more_vert),
+          onPressed: () {},
+        ),
+      ],
+    ),
+    body: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Kategori
+        if (_searchResults.isEmpty)
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: SizedBox(
@@ -76,36 +133,44 @@ class _MyHomePageState extends State<MyHomepage> {
                   return appHorizontalCard(
                     context,
                     game.name,
-                    game.gameBanner, // Gambar sampul
-                    game.gameLogo, // Placeholder jika null
+                    game.gameBanner,
+                    game.gameLogo,
                     game.rating,
                   );
                 },
               ),
             ),
           ),
-          // Grid aplikasi
-          Expanded(
-            child: GridView.builder(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-                childAspectRatio: 1.1,
-              ),
-              itemCount: _homeGames.length, // Number of cards
-              itemBuilder: (context, index) {
-                final game = _homeGames[index];
-                return appCard(game.name, game.gameBanner, game.developer.name);
-              },
+        // Grid aplikasi atau hasil pencarian
+        Expanded(
+          child: GridView.builder(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+              childAspectRatio: 1.1,
             ),
+            itemCount: _searchResults.isNotEmpty
+                ? _searchResults.length 
+                : _homeGames.length, 
+            itemBuilder: (context, index) {
+              final game = _searchResults.isNotEmpty
+                  ? _searchResults[index] 
+                  : _homeGames[index]; 
+              return appCard(
+                game.name,
+                game.gameBanner,
+                game.developer.name,
+              );
+            },
           ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
+}
 
   // Widget kartu aplikasi
   Widget appCard(String name, String gameBanner, String developer) {
