@@ -8,7 +8,7 @@ class MyLoginpage extends StatefulWidget {
 }
 
 class _MyLoginPageState extends State<MyLoginpage> {
-  final TextEditingController emailController = TextEditingController();
+  final TextEditingController usnController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
   @override
@@ -51,9 +51,9 @@ class _MyLoginPageState extends State<MyLoginpage> {
                 ),
                 const SizedBox(height: 20),
                 TextField(
-                  controller: emailController,
+                  controller: usnController,
                   decoration: const InputDecoration(
-                    labelText: 'Email',
+                    labelText: 'Username',
                     border: OutlineInputBorder(),
                     filled: true,
                     fillColor: Colors.white,
@@ -73,10 +73,10 @@ class _MyLoginPageState extends State<MyLoginpage> {
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () {
-                    String email = emailController.text;
+                    String usn = usnController.text;
                     String password = passwordController.text;
                     // tes static data dulu, sebelum login pake API
-                    print('Email: $email');
+                    print('Username: $usn');
                     print('Password: $password');
                   },
                   child: const Text('Login'),
