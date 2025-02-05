@@ -15,6 +15,9 @@ class _MyHomePageState extends State<MyHomepage> {
   List<GamesModel> _topRatedGames = [];
   String _searchQuery = '';
   List<GamesModel> _searchResults = [];
+  int _page = 0;
+  final int _limit = 10;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -24,17 +27,19 @@ class _MyHomePageState extends State<MyHomepage> {
   }
 
   void _fetchGamesData() async {
-    final gamesData = await _dataServices.getAllGamesHomepage();
-    if (gamesData != null) {
-      setState(() {
-        _homeGames = gamesData;
-      });
-    }
+    setState(() {
+      _isLoading = true;
+    });
+    final gamesData =
+        await _dataServices.getAllGamesHomepage(page: _page, limit: _limit);
+    setState(() {
+      _homeGames.addAll(gamesData);
+      _isLoading = false;
+    });
   }
 
   void _fetchTopRatedGames() async {
-    final topRatedData = await _dataServices
-        .getGamesByRating(9.0); 
+    final topRatedData = await _dataServices.getGamesByRating(9.0);
     if (topRatedData != null) {
       setState(() {
         _topRatedGames = topRatedData;
@@ -43,134 +48,153 @@ class _MyHomePageState extends State<MyHomepage> {
   }
 
   void _searchGames(String query) async {
-  final searchResults = await _dataServices.getGamesByName(query);
-  if (searchResults != null) {
-    setState(() {
-      _searchResults = searchResults;
-    });
+    final searchResults = await _dataServices.getGamesByName(query);
+    if (searchResults != null) {
+      setState(() {
+        _searchResults = searchResults;
+      });
+    }
   }
-}
 
-void showSearchDialog(BuildContext context) {
-  showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: const Text('Search Game'),
-        content: TextField(
-          onChanged: (value) {
-            _searchQuery = value;
-          },
-          decoration: const InputDecoration(
-            hintText: 'Enter game name',
+  void showSearchDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Search Game'),
+          content: TextField(
+            onChanged: (value) {
+              _searchQuery = value;
+            },
+            decoration: const InputDecoration(
+              hintText: 'Enter game name',
+            ),
           ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _searchGames(_searchQuery);
+              },
+              child: const Text('Search'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _loadMoreGames() {
+    setState(() {
+      _page++;
+    });
+    _fetchGamesData();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Image.asset(
+          'assets/icon/blue-logo.png',
+          height: 30,
         ),
+        backgroundColor: const Color.fromARGB(255, 54, 57, 62),
         actions: [
-          TextButton(
+          IconButton(
+            icon: const Icon(Icons.search),
             onPressed: () {
-              Navigator.of(context).pop();
+              showSearchDialog(context);
             },
-            child: const Text('Cancel'),
           ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              _searchGames(_searchQuery);
-            },
-            child: const Text('Search'),
+          if (_searchResults.isNotEmpty)
+            IconButton(
+              icon: const Icon(Icons.clear),
+              onPressed: () {
+                setState(() {
+                  _searchResults = [];
+                });
+              },
+            ),
+          IconButton(
+            icon: const Icon(Icons.more_vert),
+            onPressed: () {},
           ),
         ],
-      );
-    },
-  );
-}
-
-@override
-Widget build(BuildContext context) {
-  return Scaffold(
-    appBar: AppBar(
-      title: Image.asset(
-        'assets/icon/blue-logo.png',
-        height: 30,
       ),
-      backgroundColor: const Color.fromARGB(255, 54, 57, 62),
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.search),
-          onPressed: () {
-            showSearchDialog(context);
-          },
-        ),
-        if (_searchResults.isNotEmpty) 
-          IconButton(
-            icon: const Icon(Icons.clear),
-            onPressed: () {
-              setState(() {
-                _searchResults = [];
-              });
-            },
-          ),
-        IconButton(
-          icon: const Icon(Icons.more_vert),
-          onPressed: () {},
-        ),
-      ],
-    ),
-    body: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Kategori
-        if (_searchResults.isEmpty)
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: SizedBox(
-              height: 125,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: _topRatedGames.length,
-                itemBuilder: (context, index) {
-                  final game = _topRatedGames[index];
-                  return appHorizontalCard(
-                    context,
-                    game.name,
-                    game.gameBanner,
-                    game.gameLogo,
-                    game.rating,
-                  );
-                },
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Kategori
+          if (_searchResults.isEmpty)
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: SizedBox(
+                height: 125,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: _topRatedGames.length,
+                  itemBuilder: (context, index) {
+                    final game = _topRatedGames[index];
+                    return appHorizontalCard(
+                      context,
+                      game.name,
+                      game.gameBanner,
+                      game.gameLogo,
+                      game.rating,
+                    );
+                  },
+                ),
               ),
             ),
-          ),
-        // Grid aplikasi atau hasil pencarian
-        Expanded(
-          child: GridView.builder(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-              childAspectRatio: 1.1,
+          // Grid aplikasi atau hasil pencarian
+          Expanded(
+            child: GridView.builder(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+                childAspectRatio: 1.1,
+              ),
+              itemCount: _searchResults.isNotEmpty
+                  ? _searchResults.length
+                  : _homeGames.length,
+              itemBuilder: (context, index) {
+                final game = _searchResults.isNotEmpty
+                    ? _searchResults[index]
+                    : _homeGames[index];
+                return appCard(
+                  game.name,
+                  game.gameBanner,
+                  game.developer.name,
+                );
+              },
             ),
-            itemCount: _searchResults.isNotEmpty
-                ? _searchResults.length 
-                : _homeGames.length, 
-            itemBuilder: (context, index) {
-              final game = _searchResults.isNotEmpty
-                  ? _searchResults[index] 
-                  : _homeGames[index]; 
-              return appCard(
-                game.name,
-                game.gameBanner,
-                game.developer.name,
-              );
-            },
           ),
-        ),
-      ],
-    ),
-  );
-}
+          if (_isLoading) const Center(child: CircularProgressIndicator()),
+          if (!_isLoading && _homeGames.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16.0),
+              child: Center(
+                // Memusatkan ElevatedButton
+                child: ElevatedButton(
+                  onPressed: _loadMoreGames,
+                  child: const Text('Load More'),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
 
   // Widget kartu aplikasi
   Widget appCard(String name, String gameBanner, String developer) {

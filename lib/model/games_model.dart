@@ -2,7 +2,7 @@ class GamesModel {
   final String id;
   final String name;
   final double rating;
-  final DateTime? releaseDate; // Bisa nullable karena tidak ada di API
+  final DateTime? releaseDate; 
   final String description;
   final List<String> genre;
   final DeveloperModel developer;
@@ -15,7 +15,7 @@ class GamesModel {
     required this.id,
     required this.name,
     required this.rating,
-    this.releaseDate, // Nullable
+    this.releaseDate, 
     required this.description,
     required this.genre,
     required this.developer,
@@ -31,7 +31,7 @@ class GamesModel {
         rating: (json["rating"] as num).toDouble(),
         releaseDate: json["release_date"] != null
             ? DateTime.parse(json["release_date"])
-            : null, // Null jika tidak ada
+            : null,
         description: json["desc"],
         genre: List<String>.from(json["genre"]),
         developer: DeveloperModel.fromJson(json["dev_name"]),
@@ -67,11 +67,11 @@ class DeveloperModel {
 
   factory DeveloperModel.fromJson(Map<String, dynamic> json) => DeveloperModel(
         name: json["name"],
-        bio: json["bio"], // Perbaikan key
+        bio: json["bio"],
       );
 
   Map<String, dynamic> toJson() => {
         "name": name,
-        "bio": bio, // Sesuai dengan key asli
+        "bio": bio, 
       };
 }
