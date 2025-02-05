@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:zenverse_mobile_apps/model/games_model.dart';
-import 'package:zenverse_mobile_apps/services/api_services.dart';
+import 'package:zenverse_mobile_apps/services/api_services_games.dart';
 
 class MyHomepage extends StatefulWidget {
   const MyHomepage({super.key});
@@ -11,7 +11,7 @@ class MyHomepage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomepage> {
   final ApiServices _dataServices = ApiServices();
-  List<GamesModel> _homeGames = [];
+  final List<GamesModel> _homeGames = [];
   List<GamesModel> _topRatedGames = [];
   String _searchQuery = '';
   List<GamesModel> _searchResults = [];

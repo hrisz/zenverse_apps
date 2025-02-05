@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:zenverse_mobile_apps/services/auth.dart';
+import 'package:zenverse_mobile_apps/view/dashboard.dart';
 
 class MyLoginpage extends StatefulWidget {
   const MyLoginpage({super.key});
@@ -8,8 +10,33 @@ class MyLoginpage extends StatefulWidget {
 }
 
 class _MyLoginPageState extends State<MyLoginpage> {
-  final TextEditingController usnController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  Future<void> _login() async {
+    bool isLoggedIn = await ApiAuthService.login(
+      _usernameController.text,
+      _passwordController.text,
+    );
+
+    if (isLoggedIn) {
+      bool tokenExists = await ApiAuthService.isTokenAvailable();
+      if (tokenExists) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => DashboardScreen()),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to store token.')),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Login failed! Please check your credentials.')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +78,7 @@ class _MyLoginPageState extends State<MyLoginpage> {
                 ),
                 const SizedBox(height: 20),
                 TextField(
-                  controller: usnController,
+                  controller: _usernameController,
                   decoration: const InputDecoration(
                     labelText: 'Username',
                     border: OutlineInputBorder(),
@@ -61,7 +88,7 @@ class _MyLoginPageState extends State<MyLoginpage> {
                 ),
                 const SizedBox(height: 10),
                 TextField(
-                  controller: passwordController,
+                  controller: _passwordController,
                   obscureText: true,
                   decoration: const InputDecoration(
                     labelText: 'Password',
@@ -72,13 +99,7 @@ class _MyLoginPageState extends State<MyLoginpage> {
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton(
-                  onPressed: () {
-                    String usn = usnController.text;
-                    String password = passwordController.text;
-                    // tes static data dulu, sebelum login pake API
-                    print('Username: $usn');
-                    print('Password: $password');
-                  },
+                  onPressed: _login,
                   child: const Text('Login'),
                 ),
               ],
