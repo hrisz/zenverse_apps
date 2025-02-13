@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:zenverse_mobile_apps/view/homepage.dart';
 import 'package:zenverse_mobile_apps/view/loginpage.dart';
+import 'package:zenverse_mobile_apps/view/publishpage.dart';
 
 class DynamicBottomNavbar extends StatefulWidget {
   const DynamicBottomNavbar({super.key});
@@ -12,7 +13,7 @@ class _DynamicBottomNavbarState extends State<DynamicBottomNavbar> {
   int _currentPageIndex = 0;
   final List<Widget> _pages = <Widget>[
     const MyHomepage(),
-    const Text('Publish Page'),
+    const MyPublishpage(),
     const MyLoginpage(),
   ];
   void onTabTapped(int index) {
