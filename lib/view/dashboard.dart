@@ -5,6 +5,8 @@ import 'package:zenverse_mobile_apps/model/admin_model.dart';
 import 'package:zenverse_mobile_apps/view/loginpage.dart';
 
 class DashboardScreen extends StatefulWidget {
+  const DashboardScreen({super.key});
+
   @override
   _DashboardScreenState createState() => _DashboardScreenState();
 }
@@ -24,7 +26,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     if (!tokenExists) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => MyLoginpage()),
+        MaterialPageRoute(builder: (context) => const MyLoginpage()),
       );
     } else {
       _loadDashboard();
@@ -45,7 +47,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     if (isLoggedOut) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => MyLoginpage()),
+        MaterialPageRoute(builder: (context) => const MyLoginpage()),
       );
     }
   }
@@ -54,16 +56,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Dashboard'),
+        title: const Text('Dashboard'),
         actions: [
           IconButton(
-            icon: Icon(Icons.logout),
+            icon: const Icon(Icons.logout),
             onPressed: _logout,
           )
         ],
       ),
       body: admin == null
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(

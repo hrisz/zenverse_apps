@@ -24,16 +24,16 @@ class _MyLoginPageState extends State<MyLoginpage> {
       if (tokenExists) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => DashboardScreen()),
+          MaterialPageRoute(builder: (context) => const DashboardScreen()),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to store token.')),
+          const SnackBar(content: Text('Failed to store token.')),
         );
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Login failed! Please check your credentials.')),
+        const SnackBar(content: Text('Login failed! Please check your credentials.')),
       );
     }
   }
