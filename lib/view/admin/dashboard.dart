@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:zenverse_mobile_apps/services/auth.dart';
 import 'package:zenverse_mobile_apps/model/admin_model.dart';
 import 'package:zenverse_mobile_apps/model/games_model.dart';
+import 'package:zenverse_mobile_apps/view/admin/postpage.dart';
 import 'package:zenverse_mobile_apps/view/admin/updatepage.dart';
 import 'package:zenverse_mobile_apps/view/loginpage.dart';
 import 'package:zenverse_mobile_apps/services/api_services_games.dart';
@@ -29,7 +30,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   Future<void> _fetchGames() async {
     try {
-      List<GamesModel> gameList = await _dataServices.getAllGamesHomepage(page: _page, limit: _limit);
+      List<GamesModel> gameList =
+          await _dataServices.getAllGamesDashboard(page: _page, limit: _limit);
       setState(() {
         games.addAll(gameList);
         isLoading = false;
@@ -82,10 +84,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Future<void> _refreshData() async {
     setState(() {
       isLoading = true;
-      games.clear();  
-      _page = 0; 
+      games.clear();
+      _page = 0;
     });
-    await _fetchGames();  // Fetch fresh data
+    await _fetchGames(); // Fetch fresh data
   }
 
   @override
@@ -107,7 +109,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ),
                 IconButton(
                   icon: const Icon(Icons.add, color: Colors.white),
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MyPostPage(),
+                      ),
+                    );
+                  },
                 ),
                 const Spacer(),
                 IconButton(
@@ -137,7 +146,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           if (admin != null)
                             Text(
                               "Welcome, ${admin!.name}",
-                              style: const TextStyle(fontSize: 16, color: Colors.white70),
+                              style: const TextStyle(
+                                  fontSize: 16, color: Colors.white70),
                             ),
                         ],
                       ),
@@ -152,7 +162,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   child: Padding(
                     padding: const EdgeInsets.all(16),
                     child: RefreshIndicator(
-                      onRefresh: _refreshData, 
+                      onRefresh: _refreshData,
                       child: SingleChildScrollView(
                         child: Column(
                           children: [
@@ -160,35 +170,123 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               scrollDirection: Axis.horizontal,
                               child: DataTable(
                                 columns: const [
-                                  DataColumn(label: Text('ID', style: TextStyle(color: Colors.black))),
-                                  DataColumn(label: Text('Name', style: TextStyle(color: Colors.black))),
-                                  DataColumn(label: Text('Developer', style: TextStyle(color: Colors.black))),
-                                  DataColumn(label: Text('Actions', style: TextStyle(color: Colors.black))),
+                                  DataColumn(
+                                      label: Text('ID',
+                                          style:
+                                              TextStyle(color: Colors.black))),
+                                  DataColumn(
+                                      label: Text('Name',
+                                          style:
+                                              TextStyle(color: Colors.black))),
+                                  DataColumn(
+                                      label: Text('Developer',
+                                          style:
+                                              TextStyle(color: Colors.black))),
+                                  DataColumn(
+                                      label: Text('Actions',
+                                          style:
+                                              TextStyle(color: Colors.black))),
                                 ],
-                                rows: games.map((game) => DataRow(cells: [
-                                  DataCell(Text(game.id, style: const TextStyle(color: Colors.black))),
-                                  DataCell(Text(game.name, style: const TextStyle(color: Colors.black))),
-                                  DataCell(Text(game.developer.name, style: const TextStyle(color: Colors.black))),
-                                  DataCell(Row(
-                                    children: [
-                                      IconButton(
-                                        icon: const Icon(Icons.edit, color: Colors.blue),
-                                        onPressed: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) => MyUpdatePage(gameId: game.id),
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                      IconButton(
-                                        icon: const Icon(Icons.delete, color: Colors.red),
-                                        onPressed: () {},
-                                      ),
-                                    ],
-                                  )),
-                                ])).toList(),
+                                rows: games
+                                    .map((game) => DataRow(cells: [
+                                          DataCell(Text(game.id,
+                                              style: const TextStyle(
+                                                  color: Colors.black))),
+                                          DataCell(Text(game.name,
+                                              style: const TextStyle(
+                                                  color: Colors.black))),
+                                          DataCell(Text(game.developer.name,
+                                              style: const TextStyle(
+                                                  color: Colors.black))),
+                                          DataCell(Row(
+                                            children: [
+                                              IconButton(
+                                                icon: const Icon(Icons.edit,
+                                                    color: Colors.blue),
+                                                onPressed: () {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          MyUpdatePage(
+                                                              gameId: game.id),
+                                                    ),
+                                                  );
+                                                },
+                                              ),
+                                              IconButton(
+                                                icon: const Icon(Icons.delete,
+                                                    color: Colors.red),
+                                                onPressed: () async {
+                                                  // Menampilkan dialog konfirmasi
+                                                  bool? isConfirmed =
+                                                      await showDialog<bool>(
+                                                    context: context,
+                                                    builder:
+                                                        (BuildContext context) {
+                                                      return AlertDialog(
+                                                        title: const Text(
+                                                            'Konfirmasi Penghapusan'),
+                                                        content: const Text(
+                                                            'Apakah Anda yakin ingin menghapus game ini?'),
+                                                        actions: [
+                                                          TextButton(
+                                                            onPressed: () {
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .pop(
+                                                                      false); // Menutup dialog dan mengembalikan nilai false
+                                                            },
+                                                            child: const Text(
+                                                                'Tidak'),
+                                                          ),
+                                                          TextButton(
+                                                            onPressed:
+                                                                () async {
+                                                              // Melakukan penghapusan setelah konfirmasi
+                                                              bool isDeleted =
+                                                                  await _dataServices
+                                                                      .deleteGame(
+                                                                          game.id);
+                                                              if (isDeleted) {
+                                                                setState(() {
+                                                                  games.removeWhere(
+                                                                      (g) =>
+                                                                          g.id ==
+                                                                          game.id);
+                                                                });
+                                                              } else {
+                                                                ScaffoldMessenger.of(
+                                                                        context)
+                                                                    .showSnackBar(
+                                                                  const SnackBar(
+                                                                      content: Text(
+                                                                          'Gagal menghapus game.')),
+                                                                );
+                                                              }
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .pop(
+                                                                      true); // Menutup dialog dan mengembalikan nilai true
+                                                            },
+                                                            child: const Text(
+                                                                'Ya'),
+                                                          ),
+                                                        ],
+                                                      );
+                                                    },
+                                                  );
+
+                                                  // Jika pengguna memilih "Ya" dan game terhapus
+                                                  if (isConfirmed == true) {
+                                                    // Penghapusan game telah dilakukan
+                                                  }
+                                                },
+                                              ),
+                                            ],
+                                          )),
+                                        ]))
+                                    .toList(),
                               ),
                             ),
                             const SizedBox(height: 10),

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:path/path.dart';
 import 'package:mime/mime.dart';
+import 'package:zenverse_mobile_apps/model/gamespost_admin.dart';
 import 'package:zenverse_mobile_apps/model/gamesput_model.dart';
 import 'package:zenverse_mobile_apps/model/publish_model.dart';
 
@@ -26,6 +27,34 @@ class ApiServices {
         final gameList = (response.data as List)
             .map((game) => GamesModel.fromJson(game))
             .where((game) => game.rating > 1)
+            .toList();
+        return gameList;
+      } else {
+        debugPrint('Server error: ${response.statusCode}');
+        return [];
+      }
+    } on DioException catch (e) {
+      debugPrint('Client error: ${e.message}');
+      return [];
+    } catch (e) {
+      debugPrint('Unknown error: $e');
+      return [];
+    }
+  }
+
+  Future<List<GamesModel>> getAllGamesDashboard({int page = 0, int limit = 10}) async {
+    try {
+      final response = await dio.get(
+        '$_baseUrl/games/apps',
+        queryParameters: {
+          'skip': page * limit,
+          'limit': limit,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final gameList = (response.data as List)
+            .map((game) => GamesModel.fromJson(game))
             .toList();
         return gameList;
       } else {
@@ -224,6 +253,29 @@ Future<GamesModel?> getGameById(String gameId) async {
   } catch (e) {
     debugPrint('Unexpected error: $e');
     return null;
+  }
+}
+
+Future<bool> insertGameAdmin(GameModelPostAdmin game) async {
+  try {
+    final String url = '$_baseUrl/insert-game';
+    final response = await dio.post(
+      url,
+      data: game.toJson(),
+    );
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      debugPrint("Gagal insert game. Status Code: ${response.statusCode}, Response: ${response.data}");
+      return false;
+    }
+  } on DioException catch (e) {
+    debugPrint("DioException: ${e.message}, Data: ${e.response?.data}");
+    return false;
+  } catch (e) {
+    debugPrint("Unexpected error: $e");
+    return false;
   }
 }
 
