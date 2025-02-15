@@ -1,27 +1,29 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:zenverse_mobile_apps/model/games_model.dart';
 import 'package:zenverse_mobile_apps/services/api_services_games.dart';
-import 'package:zenverse_mobile_apps/model/publish_model.dart';
+import 'package:zenverse_mobile_apps/model/gamesput_model.dart';
+import 'package:zenverse_mobile_apps/view/admin/dashboard.dart';
 
-class MyPublishpage extends StatefulWidget {
-  const MyPublishpage({Key? key}) : super(key: key);
+class MyUpdatePage extends StatefulWidget {
+  final String gameId;
+  const MyUpdatePage({Key? key, required this.gameId}) : super(key: key);
 
   @override
-  State<MyPublishpage> createState() => _MyPublishpageState();
+  State<MyUpdatePage> createState() => _MyUpdatePageState();
 }
 
-class _MyPublishpageState extends State<MyPublishpage> {
+class _MyUpdatePageState extends State<MyUpdatePage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _gameNameController = TextEditingController();
-  final TextEditingController _developerNameController =
-      TextEditingController();
+  final TextEditingController _developerNameController = TextEditingController();
   final TextEditingController _genreController = TextEditingController();
   final TextEditingController _gamePreviewController = TextEditingController();
   final TextEditingController _gameLinkController = TextEditingController();
-  final TextEditingController _gameDescriptionController =
-      TextEditingController();
+  final TextEditingController _gameDescriptionController = TextEditingController();
   final TextEditingController _developerBioController = TextEditingController();
+  final TextEditingController _ratingController = TextEditingController();
   final ApiServices _dataServices = ApiServices();
 
   File? _gameLogo;
@@ -29,13 +31,35 @@ class _MyPublishpageState extends State<MyPublishpage> {
   String? _logoUrl;
   String? _bannerUrl;
 
-  Future<void> _pickImage(bool isLogo) async {
-    final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
+  @override
+  void initState() {
+    super.initState();
+    _fetchGameDetails();
+  }
 
+  Future<void> _fetchGameDetails() async {
+  GamesModel? game = await _dataServices.getGameById(widget.gameId);
+  if (game != null && mounted) { 
+    setState(() {
+      _gameNameController.text = game.name;
+      _gameDescriptionController.text = game.description;
+      _genreController.text = game.genre.join(", ");
+      _developerNameController.text = game.developer.name;
+      _developerBioController.text = game.developer.bio;
+      _gamePreviewController.text = game.preview;
+      _gameLinkController.text = game.linkGames;
+      _ratingController.text = game.rating.toString();
+      _logoUrl = game.gameLogo;
+      _bannerUrl = game.gameBanner;
+    });
+  }
+}
+
+
+  Future<void> _pickImage(bool isLogo) async {
+    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       File imageFile = File(pickedFile.path);
-
       setState(() {
         if (isLogo) {
           _gameLogo = imageFile;
@@ -45,74 +69,65 @@ class _MyPublishpageState extends State<MyPublishpage> {
       });
 
       String? uploadedUrl = await _dataServices.uploadImage(imageFile);
-      debugPrint("Response Upload: $uploadedUrl");
-
-      setState(() {
-        if (isLogo) {
-          _logoUrl = uploadedUrl;
-        } else {
-          _bannerUrl = uploadedUrl;
-        }
-      });
-      debugPrint("Gambar berhasil diunggah: $uploadedUrl");
-        }
+      if (uploadedUrl != null) {
+        setState(() {
+          if (isLogo) {
+            _logoUrl = uploadedUrl;
+          } else {
+            _bannerUrl = uploadedUrl;
+          }
+        });
+      }
+    }
   }
 
-  Future<void> _submitGame() async {
+  Future<void> _updateGame() async {
   if (_formKey.currentState!.validate()) {
     if (_logoUrl == null || _bannerUrl == null) {
-      debugPrint("Harap unggah logo dan banner game.");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Harap unggah logo dan banner game.")),
+      );
       return;
     }
 
     List<String> genreList = _genreController.text.split(',').map((e) => e.trim()).toList();
 
-    GamesModelPost game = GamesModelPost(
+    GamesModelPut updatedGame = GamesModelPut(
       name: _gameNameController.text,
+      rating: double.tryParse(_ratingController.text) ?? 0.0,
       desc: _gameDescriptionController.text,
       genre: genreList,
-      devName: DeveloperModelPost(
+      devName: DeveloperModelPut(
         name: _developerNameController.text,
         bio: _developerBioController.text,
       ),
-      gameBanner: _bannerUrl!, 
+      gameBanner: _bannerUrl!,
       preview: _gamePreviewController.text,
       linkGames: _gameLinkController.text,
       gameLogo: _logoUrl!,
     );
 
-    bool success = await _dataServices.insertGame(game);
+    bool success = await _dataServices.updateGame(widget.gameId, updatedGame);
     if (success) {
-      debugPrint("Game berhasil ditambahkan!");
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Game berhasil dipublish!")),
+        const SnackBar(content: Text("Game berhasil diperbarui!")),
       );
-      _clearFormGames();
+      if (mounted) {
+        _fetchGameDetails();
+      }
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => DashboardScreen()),
+      );
     } else {
-      debugPrint("Gagal menambahkan game.");
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Gagal menambahkan game.")),
+        const SnackBar(content: Text("Gagal memperbarui game.")),
       );
     }
   }
 }
 
-  void _clearFormGames(){
-    _gameNameController.clear();
-    _developerNameController.clear();
-    _genreController.clear();
-    _gamePreviewController.clear();
-    _gameLinkController.clear();
-    _gameDescriptionController.clear();
-    _developerBioController.clear();
-    setState(() {
-      _gameLogo = null;
-      _gameBanner = null;
-
-    });
-  }
-
-  @override
+   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -144,7 +159,7 @@ class _MyPublishpageState extends State<MyPublishpage> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: const Text(
-                      'Submit Your Game',
+                      'Update Your Game',
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -154,6 +169,7 @@ class _MyPublishpageState extends State<MyPublishpage> {
                   ),
                   const SizedBox(height: 20),
                   _buildTextField(_gameNameController, 'Game Name'),
+                  _buildTextField(_ratingController, 'Rating'),
                   _buildTextField(_developerNameController, 'Developer Name'),
                   _buildTextField(_genreController, 'Genre'),
                   _buildTextField(_gamePreviewController, 'Game Preview'),
@@ -257,12 +273,12 @@ class _MyPublishpageState extends State<MyPublishpage> {
                   const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () {
-                      _submitGame();
+                      _updateGame();
                       if (_formKey.currentState!.validate()) {
                         print('Berhasil submit teu');
                       }
                     },
-                    child: const Text('Submit'),
+                    child: const Text('Update'),
                   ),
                 ],
               ),
@@ -332,3 +348,4 @@ class _MyPublishpageState extends State<MyPublishpage> {
     );
   }
 }
+

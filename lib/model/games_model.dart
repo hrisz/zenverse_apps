@@ -28,7 +28,7 @@ class GamesModel {
   factory GamesModel.fromJson(Map<String, dynamic> json) => GamesModel(
         id: json["_id"],
         name: json["name"],
-        rating: (json["rating"] as num).toDouble(),
+        rating: (json["rating"] as num?)?.toDouble() ?? 0.0,
         releaseDate: json["release_date"] != null
             ? DateTime.parse(json["release_date"])
             : null,

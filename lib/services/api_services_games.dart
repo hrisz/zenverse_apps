@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:path/path.dart';
 import 'package:mime/mime.dart';
+import 'package:zenverse_mobile_apps/model/gamesput_model.dart';
 import 'package:zenverse_mobile_apps/model/publish_model.dart';
 
 
@@ -158,6 +159,70 @@ Future<String?> uploadImage(File imageFile) async {
     }
   } catch (e) {
     debugPrint("Error upload: $e");
+    return null;
+  }
+}
+
+Future<bool> updateGame(String gameId, GamesModelPut updatedGame) async {
+  try {
+    final String url = '$_baseUrl/update/$gameId';
+    final response = await dio.put(
+      url,
+      data: updatedGame.toJson(),
+    );
+
+    if (response.statusCode == 200) {
+      debugPrint("Game updated successfully!");
+      return true;
+    } else {
+      debugPrint("Failed to update game. Status Code: ${response.statusCode}, Response: ${response.data}");
+      return false;
+    }
+  } on DioException catch (e) {
+    debugPrint("DioException: ${e.message}, Data: ${e.response?.data}");
+    return false;
+  } catch (e) {
+    debugPrint("Unexpected error: $e");
+    return false;
+  }
+}
+
+Future<bool> deleteGame(String gameId) async {
+  try {
+    final String url = '$_baseUrl/delete/$gameId';
+    final response = await dio.delete(url);
+
+    if (response.statusCode == 200) {
+      debugPrint("Game deleted successfully!");
+      return true;
+    } else {
+      debugPrint("Failed to delete game. Status Code: ${response.statusCode}, Response: ${response.data}");
+      return false;
+    }
+  } on DioException catch (e) {
+    debugPrint("DioException: ${e.message}, Data: ${e.response?.data}");
+    return false;
+  } catch (e) {
+    debugPrint("Unexpected error: $e");
+    return false;
+  }
+}
+
+Future<GamesModel?> getGameById(String gameId) async {
+  try {
+    final response = await dio.get('$_baseUrl/games/$gameId');
+
+    if (response.statusCode == 200) {
+      return GamesModel.fromJson(response.data);
+    } else {
+      debugPrint('Server error: ${response.statusCode}');
+      return null;
+    }
+  } on DioException catch (e) {
+    debugPrint('DioException: ${e.message}, Data: ${e.response?.data}');
+    return null;
+  } catch (e) {
+    debugPrint('Unexpected error: $e');
     return null;
   }
 }

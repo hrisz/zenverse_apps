@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:zenverse_mobile_apps/services/auth.dart';
-import 'package:zenverse_mobile_apps/view/dashboard.dart';
+import 'package:zenverse_mobile_apps/view/admin/dashboard.dart';
 
 class MyLoginpage extends StatefulWidget {
   const MyLoginpage({super.key});
@@ -22,6 +22,12 @@ class _MyLoginPageState extends State<MyLoginpage> {
     if (isLoggedIn) {
       bool tokenExists = await ApiAuthService.isTokenAvailable();
       if (tokenExists) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Login Successful!'),
+            backgroundColor: Colors.green,
+          ),
+        );
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const DashboardScreen()),
