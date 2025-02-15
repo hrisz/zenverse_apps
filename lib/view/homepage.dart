@@ -19,11 +19,11 @@ class _MyHomePageState extends State<MyHomepage> {
   final int _limit = 10;
   bool _isLoading = false;
 
-  @override
+   @override
   void initState() {
     super.initState();
     _fetchGamesData();
-    _fetchTopRatedGames();
+    _fetchTopRatedGames(); 
   }
 
   void _fetchGamesData() async {
@@ -54,6 +54,14 @@ class _MyHomePageState extends State<MyHomepage> {
         _searchResults = searchResults;
       });
     }
+  }
+
+  @override
+  void dispose() {
+    _homeGames.clear();
+    _topRatedGames.clear();
+    _searchResults.clear();
+    super.dispose();
   }
 
   void showSearchDialog(BuildContext context) {
