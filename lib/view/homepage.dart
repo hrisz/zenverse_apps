@@ -48,13 +48,20 @@ class _MyHomePageState extends State<MyHomepage> {
   }
 
   void _searchGames(String query) async {
-    final searchResults = await _dataServices.getGamesByName(query);
-    if (searchResults != null) {
-      setState(() {
-        _searchResults = searchResults;
-      });
-    }
+  final searchResults = await _dataServices.getGamesByName(query);
+  setState(() {
+    _searchResults = searchResults ?? [];
+  });
+
+  if (_searchResults.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Game tidak ditemukan.'),
+        duration: Duration(seconds: 2),
+      ),
+    );
   }
+}
 
   @override
   void dispose() {

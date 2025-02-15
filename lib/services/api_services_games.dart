@@ -24,6 +24,7 @@ class ApiServices {
       if (response.statusCode == 200) {
         final gameList = (response.data as List)
             .map((game) => GamesModel.fromJson(game))
+            .where((game) => game.rating > 1)
             .toList();
         return gameList;
       } else {
@@ -74,6 +75,7 @@ class ApiServices {
       if (response.statusCode == 200) {
         final gameList = (response.data as List)
             .map((game) => GamesModel.fromJson(game))
+            .where((game) => game.rating > 1)
             .toList();
 
         return gameList;
