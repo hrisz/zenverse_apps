@@ -120,6 +120,7 @@ class _MyPublishpageState extends State<MyPublishpage> {
           'assets/icon/blue-logo.png',
           height: 30,
         ),
+        elevation: 0,
         backgroundColor: const Color.fromARGB(255, 54, 57, 62),
       ),
       body: Container(

@@ -115,12 +115,14 @@ class _MyHomePageState extends State<MyHomepage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 66, 69, 73),
       appBar: AppBar(
         title: Image.asset(
           'assets/icon/blue-logo.png',
           height: 30,
         ),
-        backgroundColor: const Color.fromARGB(255, 54, 57, 62),
+        backgroundColor: const Color.fromARGB(255, 66, 69, 73),
+        elevation: 0,
         actions: [
           IconButton(
             icon: const Icon(Icons.search),
@@ -137,19 +139,29 @@ class _MyHomePageState extends State<MyHomepage> {
                 });
               },
             ),
-          IconButton(
-            icon: const Icon(Icons.more_vert),
-            onPressed: () {},
-          ),
         ],
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Kategori
+          if (_searchResults.isEmpty)
+            const Padding(
+              padding: EdgeInsets.fromLTRB(20, 10, 20, 0),
+              child: Row(
+                children: [
+                  Icon(Icons.star, color: Colors.amber, size: 20),
+                  SizedBox(width: 4),
+                  Text('Top Rated Games', style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                    color: Colors.white,
+                  )),
+                ],
+              ),
+            ),
           if (_searchResults.isEmpty)
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5.0),
               child: SizedBox(
                 height: 125,
                 child: ListView.builder(
@@ -168,7 +180,30 @@ class _MyHomePageState extends State<MyHomepage> {
                 ),
               ),
             ),
-          // Grid aplikasi atau hasil pencarian
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5.0),
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.games_rounded,
+                  color: Colors.amber,
+                  size: 20,
+                ),
+                const SizedBox(width: 4),
+                Padding(
+                  padding: const EdgeInsets.only(top: 4.0),
+                  child: Text(
+                    _searchResults.isNotEmpty ? 'Search Results' : 'All Games',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
           Expanded(
             child: GridView.builder(
               padding:
@@ -177,7 +212,7 @@ class _MyHomePageState extends State<MyHomepage> {
                 crossAxisCount: 2,
                 crossAxisSpacing: 12,
                 mainAxisSpacing: 12,
-                childAspectRatio: 1.1,
+                childAspectRatio: 1,
               ),
               itemCount: _searchResults.isNotEmpty
                   ? _searchResults.length
@@ -197,9 +232,8 @@ class _MyHomePageState extends State<MyHomepage> {
           if (_isLoading) const Center(child: CircularProgressIndicator()),
           if (!_isLoading && _homeGames.isNotEmpty)
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16.0),
+              padding: const EdgeInsets.symmetric(vertical: 10.0),
               child: Center(
-                // Memusatkan ElevatedButton
                 child: ElevatedButton(
                   onPressed: _loadMoreGames,
                   child: const Text('Load More'),
@@ -211,7 +245,6 @@ class _MyHomePageState extends State<MyHomepage> {
     );
   }
 
-  // Widget kartu aplikasi
   Widget appCard(String name, String gameBanner, String developer) {
     return Card(
       shape: RoundedRectangleBorder(
@@ -223,9 +256,9 @@ class _MyHomePageState extends State<MyHomepage> {
         children: [
           // Icon Section
           Container(
-            height: 100, // Fixed height for the upper section
+            height: 110,
             decoration: const BoxDecoration(
-              color: Color.fromARGB(255, 114, 137, 218), // Grey background
+              color: Color.fromARGB(255, 114, 137, 218),
               borderRadius: BorderRadius.vertical(
                 top: Radius.circular(12.0),
               ),
@@ -242,7 +275,6 @@ class _MyHomePageState extends State<MyHomepage> {
               ),
             ),
           ),
-          // Text and Rating Section
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
             child: Column(
@@ -256,18 +288,18 @@ class _MyHomePageState extends State<MyHomepage> {
                   ),
                   textAlign: TextAlign.start,
                   overflow: TextOverflow.ellipsis,
-                  maxLines: 1, // Batas 1 baris
+                  maxLines: 1,
                 ),
                 const SizedBox(height: 4),
                 Text(
                   developer,
                   style: const TextStyle(
                     fontSize: 12,
-                    color: Colors.grey, // Warna teks lebih lembut
+                    color: Colors.grey,
                   ),
                   textAlign: TextAlign.start,
                   overflow: TextOverflow.ellipsis,
-                  maxLines: 1, // Batas 1 baris
+                  maxLines: 1,
                 ),
               ],
             ),

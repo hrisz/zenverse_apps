@@ -53,6 +53,7 @@ class _MyLoginPageState extends State<MyLoginpage> {
           height: 30,
         ),
         backgroundColor: const Color.fromARGB(255, 54, 57, 62),
+        elevation: 0,
       ),
       body: Container(
         decoration: const BoxDecoration(

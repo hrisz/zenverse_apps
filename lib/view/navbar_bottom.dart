@@ -44,7 +44,7 @@ class _DynamicBottomNavbarState extends State<DynamicBottomNavbar> {
             label: 'Login',
           ),
         ],
-        backgroundColor: const Color.fromARGB(255, 66, 69, 73),
+        backgroundColor: const Color.fromARGB(255, 54, 57, 62),
         selectedItemColor: const Color.fromARGB(255, 114, 137, 218),
         unselectedItemColor: Colors.white,
       ),
