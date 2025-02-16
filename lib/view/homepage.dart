@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:zenverse_mobile_apps/model/games_model.dart';
 import 'package:zenverse_mobile_apps/services/api_services_games.dart';
+import 'package:zenverse_mobile_apps/view/detailpage.dart';
 
 class MyHomepage extends StatefulWidget {
   const MyHomepage({super.key});
@@ -222,6 +223,7 @@ class _MyHomePageState extends State<MyHomepage> {
                     ? _searchResults[index]
                     : _homeGames[index];
                 return appCard(
+                  game.id,
                   game.name,
                   game.gameBanner,
                   game.developer.name,
@@ -245,8 +247,17 @@ class _MyHomePageState extends State<MyHomepage> {
     );
   }
 
-  Widget appCard(String name, String gameBanner, String developer) {
-    return Card(
+  Widget appCard(String gameId, String name, String gameBanner, String developer) {
+  return GestureDetector(
+    onTap: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => GameDetailPage(gameId: gameId),
+        ),
+      );
+    },
+    child: Card(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12.0),
       ),
@@ -254,19 +265,14 @@ class _MyHomePageState extends State<MyHomepage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Icon Section
           Container(
             height: 110,
             decoration: const BoxDecoration(
               color: Color.fromARGB(255, 114, 137, 218),
-              borderRadius: BorderRadius.vertical(
-                top: Radius.circular(12.0),
-              ),
+              borderRadius: BorderRadius.vertical(top: Radius.circular(12.0)),
             ),
             child: ClipRRect(
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(12.0),
-              ),
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(12.0)),
               child: Image.network(
                 gameBanner,
                 fit: BoxFit.cover,
@@ -286,7 +292,6 @@ class _MyHomePageState extends State<MyHomepage> {
                     fontWeight: FontWeight.bold,
                     fontSize: 14,
                   ),
-                  textAlign: TextAlign.start,
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
                 ),
@@ -297,7 +302,6 @@ class _MyHomePageState extends State<MyHomepage> {
                     fontSize: 12,
                     color: Colors.grey,
                   ),
-                  textAlign: TextAlign.start,
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
                 ),
@@ -306,8 +310,9 @@ class _MyHomePageState extends State<MyHomepage> {
           ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget appHorizontalCard(
     BuildContext context,

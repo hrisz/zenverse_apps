@@ -69,16 +69,14 @@ class _MyUpdatePageState extends State<MyUpdatePage> {
       });
 
       String? uploadedUrl = await _dataServices.uploadImage(imageFile);
-      if (uploadedUrl != null) {
-        setState(() {
-          if (isLogo) {
-            _logoUrl = uploadedUrl;
-          } else {
-            _bannerUrl = uploadedUrl;
-          }
-        });
-      }
-    }
+      setState(() {
+        if (isLogo) {
+          _logoUrl = uploadedUrl;
+        } else {
+          _bannerUrl = uploadedUrl;
+        }
+      });
+        }
   }
 
   Future<void> _updateGame() async {

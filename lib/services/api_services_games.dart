@@ -153,11 +153,6 @@ Future<String?> uploadImage(File imageFile) async {
     String? mimeType = lookupMimeType(imageFile.path);
     debugPrint("MIME Type: $mimeType");
 
-    if (mimeType == null) {
-      debugPrint('Gagal mendapatkan MIME type');
-      return null;
-    }
-
     FormData formData = FormData.fromMap({
       "img": await MultipartFile.fromFile(imageFile.path, filename: fileName),
     });
