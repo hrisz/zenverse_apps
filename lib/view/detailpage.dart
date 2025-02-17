@@ -108,41 +108,57 @@ class _GameDetailPageState extends State<GameDetailPage> {
                             ),
                             const SizedBox(width: 16),
                             Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(
                                   game!.name,
-                                  style: const TextStyle(
-                                    fontSize: 24,
+                                  style: TextStyle(
+                                    fontSize: MediaQuery.of(context).size.width * 0.06,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white,
                                   ),
                                 ),
-                                const SizedBox(height: 2),
-                                Text(
+                              ),
+                              const SizedBox(height: 2),
+                              FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(
                                   game!.developer.name,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    color: Color.fromARGB(255, 114, 137, 218),
+                                  style: TextStyle(
+                                    fontSize: MediaQuery.of(context).size.width * 0.04,
+                                    color: const Color.fromARGB(255, 114, 137, 218),
                                   ),
                                 ),
-                                const SizedBox(height: 8),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    color: const Color.fromARGB(
-                                        255, 114, 137, 218),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Text(
-                                    game!.genre.join(', '),
-                                    style: const TextStyle(
-                                        fontSize: 14, color: Colors.white),
+                              ),
+                              const SizedBox(height: 8),
+                              SizedBox(
+                                height: 30,
+                                width: MediaQuery.of(context).size.width * 0.65,
+                                child: SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  child: Row(
+                                    children: game!.genre.map((genre) {
+                                      return Container(
+                                        margin: const EdgeInsets.only(right: 6),
+                                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                        decoration: BoxDecoration(
+                                          color: const Color.fromARGB(255, 114, 137, 218),
+                                          borderRadius: BorderRadius.circular(8),
+                                        ),
+                                        child: Text(
+                                          genre,
+                                          style: const TextStyle(fontSize: 14, color: Colors.white),
+                                        ),
+                                      );
+                                    }).toList(),
                                   ),
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
+                          ),
+
                           ],
                         ),
                         const SizedBox(height: 16),
