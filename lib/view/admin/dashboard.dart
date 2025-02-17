@@ -149,6 +149,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+    appBar: PreferredSize(
+      preferredSize: Size.fromHeight(50), // Set the height of the app bar
+      child: AppBar(
+        title: Icon(Icons.dashboard),
+        elevation: 0,
+        backgroundColor: const Color.fromARGB(255, 54, 57, 62),
+      ),
+    ),
       body: Row(
         children: [
           Container(
@@ -195,6 +203,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          const SizedBox(height: 10),
                           const Text(
                             "Dashboard",
                             style: TextStyle(fontSize: 20, color: Colors.white),
