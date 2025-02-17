@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:zenverse_mobile_apps/model/games_model.dart';
 import 'package:zenverse_mobile_apps/services/api_services_games.dart';
 import 'package:zenverse_mobile_apps/view/detailpage.dart';
+import 'package:zenverse_mobile_apps/view/aboutapps.dart';
+import 'package:zenverse_mobile_apps/view/aboutdevs.dart';
 
 class MyHomepage extends StatefulWidget {
   const MyHomepage({super.key});
@@ -140,6 +142,26 @@ class _MyHomePageState extends State<MyHomepage> {
                 });
               },
             ),
+          PopupMenuButton<String>(
+          icon: const Icon(Icons.more_vert),
+          onSelected: (value) {
+            if (value == 'about_devs') {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => DeveloperMenu()));
+            } else if (value == 'about_app') {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => AppDescriptionPage()));
+            }
+          },
+          itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+            const PopupMenuItem<String>(
+              value: 'about_devs',
+              child: Text('About Developers', style: TextStyle(color: Colors.black, fontWeight: FontWeight.normal, fontSize: 14)),
+            ),
+            const PopupMenuItem<String>(
+              value: 'about_app',
+              child: Text('About App', style: TextStyle(color: Colors.black, fontWeight: FontWeight.normal, fontSize: 14)),
+            ),
+          ],
+        ),
         ],
       ),
       body: Column(
