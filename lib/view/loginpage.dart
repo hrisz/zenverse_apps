@@ -13,6 +13,14 @@ class _MyLoginPageState extends State<MyLoginpage> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
   Future<void> _login() async {
     bool isLoggedIn = await ApiAuthService.login(
       _usernameController.text,

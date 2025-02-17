@@ -20,11 +20,11 @@ class _MyHomePageState extends State<MyHomepage> {
   final int _limit = 10;
   bool _isLoading = false;
 
-   @override
+  @override
   void initState() {
     super.initState();
     _fetchGamesData();
-    _fetchTopRatedGames(); 
+    _fetchTopRatedGames();
   }
 
   void _fetchGamesData() async {
@@ -49,20 +49,20 @@ class _MyHomePageState extends State<MyHomepage> {
   }
 
   void _searchGames(String query) async {
-  final searchResults = await _dataServices.getGamesByName(query);
-  setState(() {
-    _searchResults = searchResults ?? [];
-  });
+    final searchResults = await _dataServices.getGamesByName(query);
+    setState(() {
+      _searchResults = searchResults ?? [];
+    });
 
-  if (_searchResults.isEmpty) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Game tidak ditemukan.'),
-        duration: Duration(seconds: 2),
-      ),
-    );
+    if (_searchResults.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Game tidak ditemukan.'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
   }
-}
 
   @override
   void dispose() {
@@ -152,17 +152,19 @@ class _MyHomePageState extends State<MyHomepage> {
                 children: [
                   Icon(Icons.star, color: Colors.amber, size: 20),
                   SizedBox(width: 4),
-                  Text('Top Rated Games', style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                    color: Colors.white,
-                  )),
+                  Text('Top Rated Games',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                        color: Colors.white,
+                      )),
                 ],
               ),
             ),
           if (_searchResults.isEmpty)
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5.0),
               child: SizedBox(
                 height: 125,
                 child: ListView.builder(
@@ -176,13 +178,15 @@ class _MyHomePageState extends State<MyHomepage> {
                       game.gameBanner,
                       game.gameLogo,
                       game.rating,
+                      game.id,
                     );
                   },
                 ),
               ),
             ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5.0),
             child: Row(
               children: [
                 const Icon(
@@ -247,72 +251,75 @@ class _MyHomePageState extends State<MyHomepage> {
     );
   }
 
-  Widget appCard(String gameId, String name, String gameBanner, String developer) {
-  return GestureDetector(
-    onTap: () {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => GameDetailPage(gameId: gameId),
+  Widget appCard(
+      String gameId, String name, String gameBanner, String developer) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => GameDetailPage(gameId: gameId),
+          ),
+        );
+      },
+      child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12.0),
         ),
-      );
-    },
-    child: Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12.0),
-      ),
-      elevation: 3,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            height: 110,
-            decoration: const BoxDecoration(
-              color: Color.fromARGB(255, 114, 137, 218),
-              borderRadius: BorderRadius.vertical(top: Radius.circular(12.0)),
-            ),
-            child: ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(12.0)),
-              child: Image.network(
-                gameBanner,
-                fit: BoxFit.cover,
-                height: 100,
-                width: double.infinity,
+        elevation: 3,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              height: 110,
+              decoration: const BoxDecoration(
+                color: Color.fromARGB(255, 114, 137, 218),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(12.0)),
+              ),
+              child: ClipRRect(
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(12.0)),
+                child: Image.network(
+                  gameBanner,
+                  fit: BoxFit.cover,
+                  height: 100,
+                  width: double.infinity,
+                ),
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  developer,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey,
+                  const SizedBox(height: 4),
+                  Text(
+                    developer,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   Widget appHorizontalCard(
     BuildContext context,
@@ -320,6 +327,7 @@ class _MyHomePageState extends State<MyHomepage> {
     String gameBanner,
     String gameLogo,
     double rating,
+    String gameId, // Pastikan untuk menambahkan gameId sebagai parameter
   ) {
     return Padding(
       padding: const EdgeInsets.only(right: 16.0),
@@ -328,74 +336,84 @@ class _MyHomePageState extends State<MyHomepage> {
           maxWidth: MediaQuery.of(context).size.width * 0.6,
           maxHeight: 80,
         ),
-        child: Card(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12.0),
-          ),
-          elevation: 3,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Gambar cover
-              ClipRRect(
-                borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(12.0)),
-                child: Image.network(
-                  gameBanner,
-                  width: double.infinity,
-                  height: 60,
-                  fit: BoxFit.cover,
-                ),
+        child: GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => GameDetailPage(gameId: gameId),
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    // Ikon aplikasi
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8.0),
-                      child: Image.network(
-                        gameLogo,
-                        width: 40,
-                        height: 40,
-                        fit: BoxFit.cover,
+            );
+          },
+          child: Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12.0),
+            ),
+            elevation: 3,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Gambar cover
+                ClipRRect(
+                  borderRadius:
+                      const BorderRadius.vertical(top: Radius.circular(12.0)),
+                  child: Image.network(
+                    gameBanner,
+                    width: double.infinity,
+                    height: 60,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      // Ikon aplikasi
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8.0),
+                        child: Image.network(
+                          gameLogo,
+                          width: 40,
+                          height: 40,
+                          fit: BoxFit.cover,
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 4),
-                    // Informasi aplikasi
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            name,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          const SizedBox(height: 4),
-                          Row(
-                            children: [
-                              const Icon(Icons.star,
-                                  color: Colors.amber, size: 12),
-                              const SizedBox(width: 4),
-                              Text(
-                                rating.toString(),
-                                style: const TextStyle(fontSize: 10),
+                      const SizedBox(width: 4),
+                      // Informasi aplikasi
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              name,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
                               ),
-                            ],
-                          ),
-                        ],
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 4),
+                            Row(
+                              children: [
+                                const Icon(Icons.star,
+                                    color: Colors.amber, size: 12),
+                                const SizedBox(width: 4),
+                                Text(
+                                  rating.toString(),
+                                  style: const TextStyle(fontSize: 10),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

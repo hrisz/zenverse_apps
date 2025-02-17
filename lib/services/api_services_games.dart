@@ -147,6 +147,29 @@ class ApiServices {
   }
 }
 
+Future<bool> insertGameAdmin(GameModelPostAdmin game) async {
+  try {
+    final String url = '$_baseUrl/insert-gamesadmin';
+    final response = await dio.post(
+      url,
+      data: game.toJson(),
+    );
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      debugPrint("Gagal insert game. Status Code: ${response.statusCode}, Response: ${response.data}");
+      return false;
+    }
+  } on DioException catch (e) {
+    debugPrint("DioException: ${e.message}, Data: ${e.response?.data}");
+    return false;
+  } catch (e) {
+    debugPrint("Unexpected error: $e");
+    return false;
+  }
+}
+
 Future<String?> uploadImage(File imageFile) async {
   try {
     String fileName = basename(imageFile.path);
@@ -248,29 +271,6 @@ Future<GamesModel?> getGameById(String gameId) async {
   } catch (e) {
     debugPrint('Unexpected error: $e');
     return null;
-  }
-}
-
-Future<bool> insertGameAdmin(GameModelPostAdmin game) async {
-  try {
-    final String url = '$_baseUrl/insert-game';
-    final response = await dio.post(
-      url,
-      data: game.toJson(),
-    );
-
-    if (response.statusCode == 200) {
-      return true;
-    } else {
-      debugPrint("Gagal insert game. Status Code: ${response.statusCode}, Response: ${response.data}");
-      return false;
-    }
-  } on DioException catch (e) {
-    debugPrint("DioException: ${e.message}, Data: ${e.response?.data}");
-    return false;
-  } catch (e) {
-    debugPrint("Unexpected error: $e");
-    return false;
   }
 }
 

@@ -5,7 +5,7 @@ import 'package:zenverse_mobile_apps/services/api_services_games.dart';
 import 'package:zenverse_mobile_apps/model/publish_model.dart';
 
 class MyPublishpage extends StatefulWidget {
-  const MyPublishpage({Key? key}) : super(key: key);
+  const MyPublishpage({super.key});
 
   @override
   State<MyPublishpage> createState() => _MyPublishpageState();
@@ -28,6 +28,18 @@ class _MyPublishpageState extends State<MyPublishpage> {
   File? _gameBanner;
   String? _logoUrl;
   String? _bannerUrl;
+
+  @override
+void dispose() {
+  _gameNameController.dispose();
+  _developerNameController.dispose();
+  _genreController.dispose();
+  _gamePreviewController.dispose();
+  _gameLinkController.dispose();
+  _gameDescriptionController.dispose();
+  _developerBioController.dispose();
+  super.dispose();
+}
 
   Future<void> _pickImage(bool isLogo) async {
     final pickedFile =
@@ -61,7 +73,9 @@ class _MyPublishpageState extends State<MyPublishpage> {
   Future<void> _submitGame() async {
   if (_formKey.currentState!.validate()) {
     if (_logoUrl == null || _bannerUrl == null) {
-      debugPrint("Harap unggah logo dan banner game.");
+     ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Harap isi logo dan banner")),
+      );
       return;
     }
 
@@ -85,13 +99,13 @@ class _MyPublishpageState extends State<MyPublishpage> {
     if (success) {
       debugPrint("Game berhasil ditambahkan!");
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Game berhasil dipublish!")),
+        const SnackBar(content: Text("Game berhasil dipublish!")),
       );
       _clearFormGames();
     } else {
       debugPrint("Gagal menambahkan game.");
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Gagal menambahkan game.")),
+        const SnackBar(content: Text("Gagal menambahkan game.")),
       );
     }
   }
@@ -315,7 +329,7 @@ class _MyPublishpageState extends State<MyPublishpage> {
             decoration: BoxDecoration(
               border: Border.all(color: Colors.grey),
               borderRadius: BorderRadius.circular(5),
-              color: Color.fromARGB(255, 162, 162, 162),
+              color: const Color.fromARGB(255, 162, 162, 162),
             ),
             child: image == null
                 ? const Center(

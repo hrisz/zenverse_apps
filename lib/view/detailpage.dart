@@ -7,7 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 class GameDetailPage extends StatefulWidget {
   final String gameId;
 
-  const GameDetailPage({Key? key, required this.gameId}) : super(key: key);
+  const GameDetailPage({super.key, required this.gameId});
   @override
   _GameDetailPageState createState() => _GameDetailPageState();
 }

@@ -8,7 +8,7 @@ import 'package:zenverse_mobile_apps/view/admin/dashboard.dart';
 
 class MyUpdatePage extends StatefulWidget {
   final String gameId;
-  const MyUpdatePage({Key? key, required this.gameId}) : super(key: key);
+  const MyUpdatePage({super.key, required this.gameId});
 
   @override
   State<MyUpdatePage> createState() => _MyUpdatePageState();
@@ -36,6 +36,19 @@ class _MyUpdatePageState extends State<MyUpdatePage> {
     super.initState();
     _fetchGameDetails();
   }
+
+  @override
+void dispose() {
+  _gameNameController.dispose();
+  _developerNameController.dispose();
+  _genreController.dispose();
+  _gamePreviewController.dispose();
+  _gameLinkController.dispose();
+  _gameDescriptionController.dispose();
+  _developerBioController.dispose();
+  _ratingController.dispose();
+  super.dispose();
+}
 
   Future<void> _fetchGameDetails() async {
   GamesModel? game = await _dataServices.getGameById(widget.gameId);
@@ -115,7 +128,7 @@ class _MyUpdatePageState extends State<MyUpdatePage> {
       }
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => DashboardScreen()),
+        MaterialPageRoute(builder: (context) => const DashboardScreen()),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -328,7 +341,7 @@ class _MyUpdatePageState extends State<MyUpdatePage> {
             decoration: BoxDecoration(
               border: Border.all(color: Colors.grey),
               borderRadius: BorderRadius.circular(5),
-              color: Color.fromARGB(255, 162, 162, 162),
+              color: const Color.fromARGB(255, 162, 162, 162),
             ),
             child: image == null
                 ? const Center(

@@ -6,6 +6,7 @@ import 'package:zenverse_mobile_apps/view/admin/postpage.dart';
 import 'package:zenverse_mobile_apps/view/admin/updatepage.dart';
 import 'package:zenverse_mobile_apps/view/loginpage.dart';
 import 'package:zenverse_mobile_apps/services/api_services_games.dart';
+import 'package:zenverse_mobile_apps/view/navbar_bottom.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -69,8 +70,39 @@ class _DashboardScreenState extends State<DashboardScreen> {
     if (isLoggedOut) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const MyLoginpage()),
+        MaterialPageRoute(builder: (context) => const DynamicBottomNavbar()),
+        
       );
+    }
+  }
+
+  Future<void> _showLogoutConfirmationDialog() async {
+    bool? confirmLogout = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Konfirmasi Logout'),
+          content: const Text('Apakah Anda yakin ingin keluar dari dashboard?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+              child: const Text('Batal'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+              child: const Text('Logout'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmLogout == true) {
+      _logout();
     }
   }
 
@@ -87,7 +119,31 @@ class _DashboardScreenState extends State<DashboardScreen> {
       games.clear();
       _page = 0;
     });
-    await _fetchGames(); // Fetch fresh data
+    await _fetchGames(); 
+  }
+
+  Future<bool> _onWillPop() async {
+    bool? confirmExit = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Konfirmasi Keluar'),
+          content: const Text('Apakah Anda yakin ingin keluar dari aplikasi?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Batal'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('Keluar'),
+            ),
+          ],
+        );
+      },
+    );
+
+    return confirmExit ?? false;
   }
 
   @override
@@ -113,7 +169,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => MyPostPage(),
+                        builder: (context) => const MyPostPage(),
                       ),
                     );
                   },
@@ -121,7 +177,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 const Spacer(),
                 IconButton(
                   icon: const Icon(Icons.logout, color: Colors.red),
-                  onPressed: _logout,
+                  onPressed: _showLogoutConfirmationDialog,
                 ),
               ],
             ),

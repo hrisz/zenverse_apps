@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:zenverse_mobile_apps/services/api_services_games.dart';
 import 'package:zenverse_mobile_apps/model/gamespost_admin.dart';
+import 'package:zenverse_mobile_apps/view/admin/dashboard.dart';
 
 class MyPostPage extends StatefulWidget {
-  const MyPostPage({Key? key}) : super(key: key);
+  const MyPostPage({super.key});
 
   @override
   State<MyPostPage> createState() => _MyPostPageState();
@@ -28,6 +29,7 @@ class _MyPostPageState extends State<MyPostPage> {
   File? _gameBanner;
   String? _logoUrl;
   String? _bannerUrl;
+  
 
   Future<void> _pickImage(bool isLogo) async {
     final pickedFile =
@@ -86,16 +88,33 @@ class _MyPostPageState extends State<MyPostPage> {
     if (success) {
       debugPrint("Game berhasil ditambahkan!");
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Game berhasil dipublish!")),
+        const SnackBar(content: Text("Game berhasil dipublish!")),
       );
       _clearFormGames();
+       Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const DashboardScreen()),
+      );
     } else {
       debugPrint("Gagal menambahkan game.");
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Gagal menambahkan game.")),
+        const SnackBar(content: Text("Gagal menambahkan game.")),
       );
     }
   }
+}
+
+@override
+void dispose() {
+  _gameNameController.dispose();
+  _developerNameController.dispose();
+  _genreController.dispose();
+  _gamePreviewController.dispose();
+  _gameLinkController.dispose();
+  _gameDescriptionController.dispose();
+  _developerBioController.dispose();
+  _ratingController.dispose();
+  super.dispose();
 }
 
   void _clearFormGames(){
@@ -317,7 +336,7 @@ class _MyPostPageState extends State<MyPostPage> {
             decoration: BoxDecoration(
               border: Border.all(color: Colors.grey),
               borderRadius: BorderRadius.circular(5),
-              color: Color.fromARGB(255, 162, 162, 162),
+              color: const Color.fromARGB(255, 162, 162, 162),
             ),
             child: image == null
                 ? const Center(
