@@ -115,10 +115,11 @@ class _GameDetailPageState extends State<GameDetailPage> {
                                 child: Text(
                                   game!.name,
                                   style: TextStyle(
-                                    fontSize: MediaQuery.of(context).size.width * 0.06,
+                                    fontSize: MediaQuery.of(context).size.width * 0.045,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white,
                                   ),
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ),
                               const SizedBox(height: 2),
